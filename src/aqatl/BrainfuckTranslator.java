@@ -1,12 +1,14 @@
 package aqatl;
 
 import java.util.Scanner;
+import java.util.Stack;
 
 public class BrainfuckTranslator 
 {
 	private char[] memory;
 	private int pointer;
-	private int loopStart;
+	private int memorySize;
+	private Stack<Integer> loopStack;
 	private Scanner in;
 	
 	//Execution info
@@ -16,16 +18,16 @@ public class BrainfuckTranslator
 	
     public BrainfuckTranslator()
 	{
-		this.memory = new char[30000];
+		memorySize = 30000;
+		memory = new char[memorySize];
 		pointer = 0;
+		loopStack = new Stack<>();
 		in = new Scanner(System.in);
 	}
 	
 	public void execute(String bfCode) throws BrainfuckException
 	{
-		if(bfCode.length() > memory.length)
-			throw new BrainfuckException("Memory overflow");
-		
+		loopStack.clear();
 		moves = 0;
 		time = System.currentTimeMillis();
 		instructions = bfCode.length();
@@ -41,10 +43,10 @@ public class BrainfuckTranslator
 					memory[pointer]--;
 					break;
 				case '>':
-					pointer++;
+					pointer = pointer == memorySize - 1 ? 0 : pointer + 1;
 					break;
 				case '<':
-					pointer--;
+					pointer = pointer == 0 ? memorySize - 1 : pointer - 1;
 					break;
 				case '.':
 					System.out.print(memory[pointer]);
@@ -53,12 +55,15 @@ public class BrainfuckTranslator
 					memory[pointer] = (char) in.nextInt();
 					break;
 				case '[':
-					loopStart = j;
+					loopStack.push(j);
 					break;
 				case ']':
 					if(memory[pointer] == 0)
+					{
+						loopStack.pop();
 						break;
-					j = loopStart;
+					}
+					j = loopStack.peek();
 					break;
 					
 				default:
@@ -72,8 +77,23 @@ public class BrainfuckTranslator
 	
 	public void printExecutionInfo()
 	{
-		System.out.println("Time: " + time + " miliseconds");
+		System.out.println("\nTime: " + time + " miliseconds");
 		System.out.println("Instructions: " + instructions);
 		System.out.println("Moves: " + moves);
+	}
+
+	public int getInstructions()
+	{
+		return instructions;
+	}
+
+	public int getMoves()
+	{
+		return moves;
+	}
+	
+	public long getTime()
+	{
+		return time;
 	}
 }
