@@ -15,9 +15,10 @@ public class Main extends Application
 	{
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("BrainfuckInterpreterView.fxml"));
 		Scene scene = new Scene(loader.load());
-		loader.<BrainfuckInterpreterController>getController().init();
+		loader.<BrainfuckInterpreterController>getController().init(primaryStage);
 		
 		primaryStage.setScene(scene);
+		primaryStage.setTitle("Brainfuck");
 		primaryStage.show();
 	}
 
